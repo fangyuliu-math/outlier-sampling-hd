@@ -392,13 +392,13 @@ def plot_one_run(results, save_pdf, xaxis_in_gradients=True, title=None):
 # ]
 PROBLEMS = [
     ("ARWHEAD", {"N": 100}),
-    # ("BDEXP", {"N": 100}),
-    # ("BOX", {"N": 100}),
-    # ("BOXPOWER", {"N": 100}),
-    # ("BROYDN7D", {"N/2": 50}),
-    # ("CHARDIS1", {"NP1": 50}),  # has nonlinear inequality constraints; skip for Py-BOBYQA
-    # ("COSINE", {"N": 100}),
-    # ("CURLY10", {"N": 100}),
+    ("BDEXP", {"N": 100}),
+    ("BOX", {"N": 100}),
+    ("BOXPOWER", {"N": 100}),
+    ("BROYDN7D", {"N/2": 50}),
+    ("CHARDIS1", {"NP1": 50}),  # has nonlinear inequality constraints; skip for Py-BOBYQA
+    ("COSINE", {"N": 100}),
+    ("CURLY10", {"N": 100}),
     # ("CURLY20", {"N": 100}),
     # ("DIXMAANA1", {"M": 30}),    # your MASTSIF says DIXMAANA.SIF does not exist
     # ("DIXMAANF", {"M": 30}),
