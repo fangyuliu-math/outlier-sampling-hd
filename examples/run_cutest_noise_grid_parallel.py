@@ -493,9 +493,9 @@ AGGREGATORS = [
 # Later, for a fuller comparison:
 #
 NS_RULES = [
-    ns_rule_const(10),
+    # ns_rule_const(10),
     ns_rule_const(30),
-    ns_rule_const(50),
+    # ns_rule_const(50),
     ns_rule_const(100),
     ns_rule_inv_delta(),
 ]
@@ -507,7 +507,7 @@ NS_RULES = [
 # IMPORTANT:
 # For n ≈ 100, maxfun = BUDGET_IN_GRAD * (n+1).
 # BUDGET_IN_GRAD=20 already means about 2020 evaluations per run.
-BUDGET_IN_GRAD = 500
+BUDGET_IN_GRAD = 200
 
 # For the pilot, use 1 run only.
 NRUNS_PER_COMBO = 10
