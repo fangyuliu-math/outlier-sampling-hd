@@ -389,36 +389,36 @@ def plot_one_run(results, save_pdf, xaxis_in_gradients=True, title=None):
 #     ("TOINTPSP", {}),
 # ]
 PROBLEMS = [
-    # ("ARWHEAD", {"N": 100}),
-    # ("BDEXP", {"N": 100}),
-    # ("BOX", {"N": 100}),
-    # ("BOXPOWER", {"N": 100}),
-    # ("BROYDN7D", {"N/2": 50}),
-    # ("CHARDIS1", {"NP1": 50}),  # has nonlinear inequality constraints; skip for Py-BOBYQA
-    # ("COSINE", {"N": 100}),
-    # ("CURLY10", {"N": 100}),
-    # ("CURLY20", {"N": 100}),
-    # ("DIXMAANA1", {"M": 30}),    # your MASTSIF says DIXMAANA.SIF does not exist
-    # ("DIXMAANF", {"M": 30}),
-    # ("DIXMAANP", {"M": 30}),
-    # ("ENGVAL1", {"N": 100}),
-    # ("FMINSRF2", {"P": 8}),
-    # ("FMINSURF", {"P": 8}),
-    # ("NCB20", {"N": 100}),
-    # ("NCB20B", {"N": 100}),
-    # ("NONCVXU2", {"N": 100}),
+    ("ARWHEAD", {"N": 100}),
+    ("BDEXP", {"N": 100}),
+    ("BOX", {"N": 100}),
+    ("BOXPOWER", {"N": 100}),
+    ("BROYDN7D", {"N/2": 50}),
+    ("CHARDIS1", {"NP1": 50}),  # has nonlinear inequality constraints; skip for Py-BOBYQA
+    ("COSINE", {"N": 100}),
+    ("CURLY10", {"N": 100}),
+    ("CURLY20", {"N": 100}),
+    ("DIXMAANA1", {"M": 30}),    # your MASTSIF says DIXMAANA.SIF does not exist
+    ("DIXMAANF", {"M": 30}),
+    ("DIXMAANP", {"M": 30}),
+    ("ENGVAL1", {"N": 100}),
+    ("FMINSRF2", {"P": 8}),
+    ("FMINSURF", {"P": 8}),
+    ("NCB20", {"N": 100}),
+    ("NCB20B", {"N": 100}),
+    ("NONCVXU2", {"N": 100}),
     ("NONCVXUN", {"N": 100}),
     ("NONDQUAR", {"N": 100}),
     # ("ODC", {"NX": 10, "NY": 10}),
-    # ("PENALTY3", {"N/2": 50}),
-    # ("POWER", {"N": 100}),
-    # ("RAYBENDL", {"NKNOTS": 32}),
-    # ("SCHMVETT", {"N": 100}),
-    # ("SINEALI", {"N": 100}),
-    # ("SINQUAD", {"N": 100}),
-    # ("TOINTGOR", {}),
-    # ("TOINTGSS", {"N": 100}),
-    # ("TOINTPSP", {}),
+    ("PENALTY3", {"N/2": 50}),
+    ("POWER", {"N": 100}),
+    ("RAYBENDL", {"NKNOTS": 32}),
+    ("SCHMVETT", {"N": 100}),
+    ("SINEALI", {"N": 100}),
+    ("SINQUAD", {"N": 100}),
+    ("TOINTGOR", {}),
+    ("TOINTGSS", {"N": 100}),
+    ("TOINTPSP", {}),
 ]
 
 # ------------------------------------------------------------
@@ -474,9 +474,9 @@ AGGREGATORS = [
 # Sampling rules
 # ------------------------------------------------------------
 # For the first test, use only N=1.
-NS_RULES = [
-     ns_rule_inv_delta()
-]
+# NS_RULES = [
+#      ns_rule_inv_delta()
+# ]
 
 # NS_RULES = [
 #     ns_rule_const(30)
@@ -490,13 +490,13 @@ NS_RULES = [
 #
 # Later, for a fuller comparison:
 #
-# NS_RULES = [
-#     ns_rule_const(10),
-#     ns_rule_const(30),
-#     ns_rule_const(50),
-#     ns_rule_const(100),
-#     ns_rule_inv_delta(),
-# ]
+NS_RULES = [
+    ns_rule_const(10),
+    ns_rule_const(30),
+    ns_rule_const(50),
+    ns_rule_const(100),
+    ns_rule_inv_delta(),
+]
 
 
 # ------------------------------------------------------------
@@ -505,13 +505,13 @@ NS_RULES = [
 # IMPORTANT:
 # For n ≈ 100, maxfun = BUDGET_IN_GRAD * (n+1).
 # BUDGET_IN_GRAD=20 already means about 2020 evaluations per run.
-BUDGET_IN_GRAD = 100
+BUDGET_IN_GRAD = 500
 
 # For the pilot, use 1 run only.
 NRUNS_PER_COMBO = 10
 
 # Use a separate folder so this does not mix with your More-Wild results.
-OUT_ROOT = os.path.join("raw_results_cutest_pilot_100", "noise_grid")
+OUT_ROOT = os.path.join("raw_results_cutest_pilot", "noise_grid")
 
 MAKE_PDF = True
 
