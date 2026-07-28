@@ -1,0 +1,16 @@
+README.md
+pyproject.toml
+pybobyqa_sampling/__init__.py
+pybobyqa_sampling/controller.py
+pybobyqa_sampling/diagnostic_info.py
+pybobyqa_sampling/hessian.py
+pybobyqa_sampling/model.py
+pybobyqa_sampling/params.py
+pybobyqa_sampling/solver.py
+pybobyqa_sampling/trust_region.py
+pybobyqa_sampling/util.py
+pybobyqa_sampling.egg-info/PKG-INFO
+pybobyqa_sampling.egg-info/SOURCES.txt
+pybobyqa_sampling.egg-info/dependency_links.txt
+pybobyqa_sampling.egg-info/requires.txt
+pybobyqa_sampling.egg-info/top_level.txt

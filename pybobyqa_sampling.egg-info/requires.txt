@@ -1,0 +1,12 @@
+setuptools
+numpy
+scipy
+pandas
+
+[dev]
+pytest
+Sphinx
+sphinx-rtd-theme
+
+[trustregion]
+trustregion>=1.1
