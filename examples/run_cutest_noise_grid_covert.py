@@ -52,11 +52,11 @@ else:
 # Candidate input roots.
 # The script will use the first one that exists.
 CANDIDATE_IN_ROOTS = [
-    os.path.join(PROJECT_ROOT, "raw_results_cutest_pilot_100", "noise_grid"),
-    os.path.join(PROJECT_ROOT, "examples", "raw_results_cutest_pilot_100", "noise_grid"),
+    os.path.join(PROJECT_ROOT, "raw_results_cutest_parallel", "noise_grid"),
+    os.path.join(PROJECT_ROOT, "examples", "raw_results_cutest_parallel", "noise_grid"),
 ]
 
-OUT_ROOT = os.path.join(PROJECT_ROOT, "converted_results_cutest_pilot_100")
+OUT_ROOT = os.path.join(PROJECT_ROOT, "converted_results_cutest_parallel")
 
 # Default output root.
 # If the input root contains "pilot", output goes to converted_results_cutest_pilot.
