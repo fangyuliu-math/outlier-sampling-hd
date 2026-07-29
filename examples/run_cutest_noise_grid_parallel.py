@@ -513,7 +513,7 @@ BUDGET_IN_GRAD = 200
 NRUNS_PER_COMBO = 10
 
 # Use a separate folder so this does not mix with your More-Wild results.
-OUT_ROOT = os.path.join("raw_results_cutest_pilot_parallel", "noise_grid")
+OUT_ROOT = os.path.join("raw_results_cutest_parallel", "noise_grid")
 
 MAKE_PDF = True
 
