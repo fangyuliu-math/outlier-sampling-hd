@@ -399,14 +399,14 @@ PROBLEMS = [
     ("CHARDIS1", {"NP1": 50}),  # has nonlinear inequality constraints; skip for Py-BOBYQA
     ("COSINE", {"N": 100}),
     ("CURLY10", {"N": 100}),
-    # ("CURLY20", {"N": 100}),
-    # ("DIXMAANA1", {"M": 30}),    # your MASTSIF says DIXMAANA.SIF does not exist
-    # ("DIXMAANF", {"M": 30}),
-    # ("DIXMAANP", {"M": 30}),
-    # ("ENGVAL1", {"N": 100}),
-    # ("FMINSRF2", {"P": 8}),
-    # ("FMINSURF", {"P": 8}),
-    # ("NCB20", {"N": 100}),
+    ("CURLY20", {"N": 100}),
+    ("DIXMAANA1", {"M": 30}),    # your MASTSIF says DIXMAANA.SIF does not exist
+    ("DIXMAANF", {"M": 30}),
+    ("DIXMAANP", {"M": 30}),
+    ("ENGVAL1", {"N": 100}),
+    ("FMINSRF2", {"P": 8}),
+    ("FMINSURF", {"P": 8}),
+    ("NCB20", {"N": 100}),
     # ("NCB20B", {"N": 100}),
     # ("NONCVXU2", {"N": 100}),
     # ("NONCVXUN", {"N": 100}),
@@ -507,7 +507,7 @@ NS_RULES = [
 # IMPORTANT:
 # For n ≈ 100, maxfun = BUDGET_IN_GRAD * (n+1).
 # BUDGET_IN_GRAD=20 already means about 2020 evaluations per run.
-BUDGET_IN_GRAD = 25
+BUDGET_IN_GRAD = 20
 
 # For the pilot, use 1 run only.
 NRUNS_PER_COMBO = 2
@@ -712,7 +712,7 @@ def main(problem):
 if __name__ == "__main__":
     os.makedirs(OUT_ROOT, exist_ok=True)
 
-    nthreads = 8
+    nthreads = 16
 
     print("============================================================")
     print("Serial PyCUTEst cache preparation")
