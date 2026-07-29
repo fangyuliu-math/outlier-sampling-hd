@@ -708,7 +708,7 @@ def main(problem):
 if __name__ == "__main__":
     os.makedirs(OUT_ROOT, exist_ok=True)
 
-    nthreads = 8
+    nthreads = 16
 
     print("============================================================")
     print("Serial PyCUTEst cache preparation")
