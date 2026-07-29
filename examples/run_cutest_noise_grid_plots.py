@@ -1,7 +1,7 @@
 """
 CUTEst-specific plotting script for converted high-dimensional noisy DFO results.
 
-This script reads converted CUTEst JSON files produced by convert_cutest_noise_grid.py.
+This script reads converted CUTEst JSON files produced by run_cutest_noise_grid_covert.py.
 
 Expected converted structure:
 
@@ -79,7 +79,7 @@ else:
 # CONVERTED_ROOT = None
 
 # Only read this converted folder.
-CONVERTED_ROOT = os.path.join(PROJECT_ROOT, "converted_results_cutest_pilot_100")
+CONVERTED_ROOT = os.path.join(PROJECT_ROOT, "converted_results_cutest_parallel")
 
 # If CONVERTED_ROOT is None, the script searches these candidates and uses
 # the newest existing one.
@@ -93,7 +93,7 @@ CONVERTED_ROOT = os.path.join(PROJECT_ROOT, "converted_results_cutest_pilot_100"
 # ]
 
 
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "plots_cutest_profiles_100_30")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "plots_cutest_profiles_parallel")
 
 
 # ============================================================
@@ -108,8 +108,8 @@ SELECT_NOISE_MODELS = None
 
 # Set to None to use all discovered sample rules.
 # Or explicitly restrict, e.g.
-SELECT_NS_RULES = ["inv_delta()"]
-# SELECT_NS_RULES = None
+# SELECT_NS_RULES = ["inv_delta()"]
+SELECT_NS_RULES = None
 
 
 # Set to None to use all discovered aggregators.
