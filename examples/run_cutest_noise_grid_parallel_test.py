@@ -276,6 +276,80 @@ def safe_name(s: str) -> str:
     """
     return str(s).replace("/", "_").replace("\\", "_").replace(" ", "_")
 
+def completed_run_exists(
+    json_path,
+    problem_name,
+    sif_params,
+    noise_model,
+    agg_name,
+    ns_rule_name,
+    budget,
+    run_number,
+):
+    """
+    Return True only if json_path contains a complete result from
+    exactly the same experiment configuration.
+
+    This allows safe restart/resume without repeating finished runs.
+    """
+
+    if not os.path.isfile(json_path):
+        return False
+
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        if not isinstance(data, dict):
+            return False
+
+        if "results" not in data or "summary" not in data:
+            return False
+
+        summary = data["summary"]
+
+        # Make sure this file really belongs to the same experiment.
+        if summary.get("problem_name") != problem_name:
+            return False
+
+        if summary.get("sif_params") != sif_params:
+            return False
+
+        if summary.get("noise_model") != noise_model:
+            return False
+
+        if summary.get("aggregator") != agg_name:
+            return False
+
+        if summary.get("ns_rule") != ns_rule_name:
+            return False
+
+        if int(summary.get("budget_in_gradients", -1)) != int(budget):
+            return False
+
+        if int(summary.get("run", -1)) != int(run_number):
+            return False
+
+        # A completed run should contain these basic result fields.
+        results = data["results"]
+
+        required_result_keys = [
+            "nf",
+            "n",
+            "fvals_smooth",
+            "fvals_noisy",
+        ]
+
+        for key in required_result_keys:
+            if key not in results:
+                return False
+
+        return True
+
+    except Exception:
+        # File exists but is corrupted / incomplete.
+        # In this case we recompute it.
+        return False
 
 def plot_one_run(results, save_pdf, xaxis_in_gradients=True, title=None):
     """
@@ -519,50 +593,206 @@ OUT_ROOT = os.path.join(
     "noise_grid",
 )
 
-MAKE_PDF = True
+# MAKE_PDF = True
+MAKE_PDF = False
 
 
 # ============================================================
 # Main experiment routine
 # ============================================================
 
-def run_one_combo(problem_name, sif_params, noise_model, agg_name, agg_fn, ns_rule, budget, nruns, out_root):
+# def run_one_combo(problem_name, sif_params, noise_model, agg_name, agg_fn, ns_rule, budget, nruns, out_root):
+#     """
+#     Run one combination:
+#     problem x noise model x aggregator x sample rule.
+#     """
+#     problem_name_safe = safe_name(problem_name)
+#     outdir = os.path.join(out_root, problem_name_safe, noise_model, agg_name, ns_rule._name)
+#     os.makedirs(outdir, exist_ok=True)
+#
+#     for r in range(nruns):
+#         # Fresh wrapper/run each time.
+#         wrapper = load_cutest_problem(
+#             problem_name,
+#             sif_params=sif_params,
+#             noise_model=noise_model,
+#         )
+#
+#         maxfun = int(budget * (wrapper._n + 1))
+#
+#         # Use bounds from CUTEst if available.
+#         pybobyqa_sampling.solve(
+#             wrapper,
+#             wrapper._x0,
+#             bounds=wrapper.bounds_as_lower_upper_arrays(),
+#             maxfun=maxfun,
+#             npt=2*wrapper._n + 1,
+#             nsamples=ns_rule,
+#             nsamples_aggregator=agg_fn,
+#             objfun_has_noise=wrapper.is_noisy(),
+#             print_progress=False,
+#         )
+#
+#         res = wrapper.get_results(vectors_as_numpy=True)
+#
+#         res_summary = {
+#             "f_best_smooth": float(np.min(res["fvals_smooth"])),
+#             "f_best_noisy": float(np.min(res["fvals_noisy"])),
+#             "nf": int(res["nf"]),
+#             "n": int(res["n"]),
+#             "maxfun": int(maxfun),
+#             "budget_in_gradients": int(budget),
+#             "noise_model": noise_model,
+#             "aggregator": agg_name,
+#             "ns_rule": ns_rule._name,
+#             "problem_name": problem_name,
+#             "problem_name_safe": problem_name_safe,
+#             "sif_params": sif_params,
+#             "objfun_name": res["objfun_name"],
+#             "run": int(r),
+#         }
+#
+#         # Save JSON.
+#         json_path = os.path.join(outdir, f"run{r:02d}.json")
+#         with open(json_path, "w", encoding="utf-8") as f:
+#             json.dump(
+#                 {
+#                     "results": as_serializable(res),
+#                     "summary": res_summary,
+#                 },
+#                 f,
+#                 ensure_ascii=False,
+#                 indent=2,
+#             )
+#
+#         # Save quick PDF curve for the first run of each combo.
+#         if MAKE_PDF and r == 0:
+#             pdf_path = os.path.join(outdir, f"run{r:02d}.pdf")
+#             plot_one_run(
+#                 res,
+#                 pdf_path,
+#                 title=f"{problem_name} | {noise_model} | {agg_name} | {ns_rule._name}",
+#             )
+#
+#         print(
+#             f"[done] {problem_name} "
+#             f"{noise_model} {agg_name} {ns_rule._name} "
+#             f"r={r:02d} nf={int(res['nf'])} n={int(res['n'])}"
+#         )
+
+def run_one_combo(
+    problem_name,
+    sif_params,
+    noise_model,
+    agg_name,
+    agg_fn,
+    ns_rule,
+    budget,
+    nruns,
+    out_root,
+):
     """
     Run one combination:
     problem x noise model x aggregator x sample rule.
+
+    Supports safe restart/resume:
+    - completed matching JSON files are skipped;
+    - incomplete/corrupted/mismatched files are recomputed.
     """
+
     problem_name_safe = safe_name(problem_name)
-    outdir = os.path.join(out_root, problem_name_safe, noise_model, agg_name, ns_rule._name)
+
+    outdir = os.path.join(
+        out_root,
+        problem_name_safe,
+        noise_model,
+        agg_name,
+        ns_rule._name,
+    )
+
     os.makedirs(outdir, exist_ok=True)
 
     for r in range(nruns):
-        # Fresh wrapper/run each time.
+
+        # ----------------------------------------------------
+        # Output path for this individual run
+        # ----------------------------------------------------
+        json_path = os.path.join(
+            outdir,
+            f"run{r:02d}.json",
+        )
+
+        # ----------------------------------------------------
+        # Resume logic
+        # ----------------------------------------------------
+        if completed_run_exists(
+            json_path=json_path,
+            problem_name=problem_name,
+            sif_params=sif_params,
+            noise_model=noise_model,
+            agg_name=agg_name,
+            ns_rule_name=ns_rule._name,
+            budget=budget,
+            run_number=r,
+        ):
+            print(
+                f"[skip existing] {problem_name} "
+                f"{noise_model} {agg_name} {ns_rule._name} "
+                f"r={r:02d}",
+                flush=True,
+            )
+            continue
+
+        if os.path.isfile(json_path):
+            print(
+                f"[redo incomplete/mismatched] {problem_name} "
+                f"{noise_model} {agg_name} {ns_rule._name} "
+                f"r={r:02d}",
+                flush=True,
+            )
+
+        # ----------------------------------------------------
+        # Fresh wrapper/run
+        # ----------------------------------------------------
         wrapper = load_cutest_problem(
             problem_name,
             sif_params=sif_params,
             noise_model=noise_model,
         )
 
-        maxfun = int(budget * (wrapper._n + 1))
+        maxfun = int(
+            budget * (wrapper._n + 1)
+        )
 
-        # Use bounds from CUTEst if available.
+        # ----------------------------------------------------
+        # Run solver
+        # ----------------------------------------------------
         pybobyqa_sampling.solve(
             wrapper,
             wrapper._x0,
             bounds=wrapper.bounds_as_lower_upper_arrays(),
             maxfun=maxfun,
-            npt=2*wrapper._n + 1,
+            npt=2 * wrapper._n + 1,
             nsamples=ns_rule,
             nsamples_aggregator=agg_fn,
             objfun_has_noise=wrapper.is_noisy(),
             print_progress=False,
         )
 
-        res = wrapper.get_results(vectors_as_numpy=True)
+        res = wrapper.get_results(
+            vectors_as_numpy=True
+        )
 
+        # ----------------------------------------------------
+        # Summary
+        # ----------------------------------------------------
         res_summary = {
-            "f_best_smooth": float(np.min(res["fvals_smooth"])),
-            "f_best_noisy": float(np.min(res["fvals_noisy"])),
+            "f_best_smooth": float(
+                np.min(res["fvals_smooth"])
+            ),
+            "f_best_noisy": float(
+                np.min(res["fvals_noisy"])
+            ),
             "nf": int(res["nf"]),
             "n": int(res["n"]),
             "maxfun": int(maxfun),
@@ -577,32 +807,70 @@ def run_one_combo(problem_name, sif_params, noise_model, agg_name, agg_fn, ns_ru
             "run": int(r),
         }
 
-        # Save JSON.
-        json_path = os.path.join(outdir, f"run{r:02d}.json")
-        with open(json_path, "w", encoding="utf-8") as f:
+        output_data = {
+            "results": as_serializable(res),
+            "summary": res_summary,
+        }
+
+        # ----------------------------------------------------
+        # Save JSON safely
+        #
+        # Write to a temporary file first. Only after the JSON
+        # is completely written do we rename it to runXX.json.
+        #
+        # Therefore, if the VM stops during writing, it should
+        # not leave a half-written runXX.json that looks valid.
+        # ----------------------------------------------------
+        temp_json_path = (
+            json_path
+            + f".tmp.{os.getpid()}"
+        )
+
+        with open(
+            temp_json_path,
+            "w",
+            encoding="utf-8",
+        ) as f:
             json.dump(
-                {
-                    "results": as_serializable(res),
-                    "summary": res_summary,
-                },
+                output_data,
                 f,
                 ensure_ascii=False,
                 indent=2,
             )
 
-        # Save quick PDF curve for the first run of each combo.
+        os.replace(
+            temp_json_path,
+            json_path,
+        )
+
+        # ----------------------------------------------------
+        # Optional PDF
+        # ----------------------------------------------------
         if MAKE_PDF and r == 0:
-            pdf_path = os.path.join(outdir, f"run{r:02d}.pdf")
+            pdf_path = os.path.join(
+                outdir,
+                f"run{r:02d}.pdf",
+            )
+
             plot_one_run(
                 res,
                 pdf_path,
-                title=f"{problem_name} | {noise_model} | {agg_name} | {ns_rule._name}",
+                title=(
+                    f"{problem_name} | "
+                    f"{noise_model} | "
+                    f"{agg_name} | "
+                    f"{ns_rule._name}"
+                ),
             )
 
         print(
             f"[done] {problem_name} "
-            f"{noise_model} {agg_name} {ns_rule._name} "
-            f"r={r:02d} nf={int(res['nf'])} n={int(res['n'])}"
+            f"{noise_model} {agg_name} "
+            f"{ns_rule._name} "
+            f"r={r:02d} "
+            f"nf={int(res['nf'])} "
+            f"n={int(res['n'])}",
+            flush=True,
         )
 
 
