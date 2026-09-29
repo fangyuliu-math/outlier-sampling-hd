@@ -131,8 +131,8 @@ TAUS = {
 
 # If None, use the maximum available budget in the loaded data.
 # Otherwise set a number, e.g. 20 or 500.
-# MAX_BUDGET_IN_GRADIENTS = None
-MAX_BUDGET_IN_GRADIENTS = 100
+MAX_BUDGET_IN_GRADIENTS = None
+# MAX_BUDGET_IN_GRADIENTS = 200
 
 
 # If True, each problem contributes the average of its repeated runs.
