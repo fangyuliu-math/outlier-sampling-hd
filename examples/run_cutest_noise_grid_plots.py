@@ -166,7 +166,7 @@ def pretty_agg_label(agg: str) -> str:
     label_map = {
         "mean": "Mean",
         "median": "Median",
-        "trimmed_mean_10": "Trimmed mean",
+        "trimmed_mean_10": "Tm",
         "mom_K5": "MoM",
     }
     return label_map.get(agg, agg)
