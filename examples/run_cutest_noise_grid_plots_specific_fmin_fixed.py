@@ -1305,52 +1305,21 @@ def build_perf_profile_curves(
     # --------------------------------------------------------
 
     finite_ratios = []
-
     for ratios in ratios_by_agg.values():
-
-        finite_ratios.extend(
-            [
-                r
-                for r in ratios
-                if np.isfinite(r)
-            ]
-        )
+        finite_ratios.extend([r for r in ratios if np.isfinite(r)])
 
     if not finite_ratios:
-
         return None, {}
 
-    max_ratio = max(
-        2.0,
-        float(
-            np.max(
-                finite_ratios
-            )
-        )
-    )
+    # Keep the performance-profile x-axis fixed at 1--32,
+    # consistent with the original low-dimensional plotting code.
+    max_observed_ratio = float(np.max(finite_ratios))
 
-    # --------------------------------------------------------
-    # Build a dense base-2 logarithmic x-grid.
-    #
-    # Do not first collapse repeated runs with a median.
-    # --------------------------------------------------------
-
-    xvals = np.unique(
-        np.concatenate(
-            [
-                np.array(
-                    [1.0]
-                ),
-                np.logspace(
-                    0.0,
-                    np.log2(
-                        max_ratio
-                    ),
-                    200,
-                    base=2.0
-                ),
-            ]
-        )
+    xvals = np.logspace(
+        0.0,
+        5.0,
+        200,
+        base=2.0,
     )
 
     curves = {}
@@ -1384,14 +1353,10 @@ def build_perf_profile_curves(
     # Useful check:
     # with 29 problems and 10 runs, this should report 290.
     print(
-        f"[DEBUG PERF] "
-        f"noise={noise}, "
-        f"ns={ns_rule}: "
-        f"{len(problems)} problems "
-        f"x {nruns} runs "
-        f"= {expected_nobs} observations; "
-        f"max finite ratio="
-        f"{max_ratio:.6g}"
+        f"[DEBUG PERF] noise={noise}, ns={ns_rule}: "
+        f"{len(problems)} problems x {nruns} runs = {expected_nobs} observations; "
+        f"max observed finite ratio={max_observed_ratio:.6g}; "
+        f"plot x-axis fixed at 1--32"
     )
 
     return (
@@ -1517,50 +1482,28 @@ def plot_curves(
     )
 
     if logx:
-
-        # ----------------------------------------------------
-        # Use base 2 for the performance-profile x-axis.
-        # ----------------------------------------------------
-
+        # Use the same fixed performance-profile x-axis as the
+        # original low-dimensional paper plots:
+        #
+        #     1, 2, 4, 8, 16, 32
+        #
         ax.set_xscale(
             "log",
-            base=2
+            base=2,
         )
 
-        xmax = max(
-            2.0,
-            float(
-                np.max(
-                    xvals
-                )
-            )
-        )
-
-        # Extend the displayed axis to the next power of 2.
-        max_power = int(
-            np.ceil(
-                np.log2(
-                    xmax
-                )
-            )
-        )
-
-        xmax_tick = float(
-            2 ** max_power
-        )
-
-        ticks = (
-            2.0
-            **
-            np.arange(
-                0,
-                max_power + 1
-            )
-        )
+        ticks = [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+        ]
 
         ax.set_xlim(
             1.0,
-            xmax_tick
+            32.0,
         )
 
         ax.set_xticks(
@@ -1569,7 +1512,7 @@ def plot_curves(
 
         ax.set_xticklabels(
             [
-                f"{tick:g}"
+                str(tick)
                 for tick in ticks
             ]
         )
