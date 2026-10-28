@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Audit the exact transformed data and performance-profile routines in
+"""
+Audit the exact transformed data and performance-profile routines in
 run_cutest_noise_grid_plots_specific_fmin_fixed.py.
 
 Use this on the machine holding converted_results_cutest_parallel; it only
