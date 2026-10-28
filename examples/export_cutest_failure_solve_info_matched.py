@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Streamed audit export matching run_cutest_noise_grid_plots_specific_fmin_fixed.py.
+"""
+Streamed audit export matching run_cutest_noise_grid_plots_specific_fmin_fixed.py.
 
 Usage, from repository root:
   python examples/export_cutest_failure_solve_info_matched.py \
