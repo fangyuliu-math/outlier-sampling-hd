@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Independent diagnostic export of per-run first-success indices from converted CUTEst JSON.
+"""
+Independent diagnostic export of per-run first-success indices from converted CUTEst JSON.
 
 Targets use f0 and fmin pooled over all aggregators and sample rules for the
 specified noise model. Confirm against original plotting code before expecting
